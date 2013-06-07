@@ -9,7 +9,7 @@ This library allows for more easy interaction with the XML API, and reduces the 
 Ryan Morrissey - [ryancmorrissey.com](http://ryancmorrissey.com) | [@rmorrissey23](http://www.twitter.com/rmorrissey23)
 
 ## LICENSE
-See LICENSE.md
+See [LICENSE.md](LICENSE.md)
 
 ## REQUIREMENTS
 - Python 2.6+ (2.7.3 recommended)
@@ -22,7 +22,7 @@ TBD
 Documentation can be found on the [oaxmlapi wiki](https://github.com/23maverick23/oaxmlapi/wiki).
 
 ## BUGS
-Please use Git issues for logging and tracking the statuses of bugs.
+Please use [issues](https://github.com/23maverick23/oaxmlapi/issues) for logging and tracking bugs or enhancements.
 
 ## HISTORY
 Current Version: 1.0
