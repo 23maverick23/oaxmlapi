@@ -1,5 +1,4 @@
-oaxmlapi -- a Python library for the OpenAir XML API
-====================================================
+# oaxmlapi
 
 ## DESCRIPTION
 oaxmlapi is a Python wrapper around the NetSuite OpenAir XML API.
@@ -20,7 +19,7 @@ See LICENSE.md
 TBD
 
 ## DOCUMENTATION
-Documentation can be found on the [oaxmlapi wiki](https://github.com/23maverick23/oaxmlapi/wiki/oaxmlapi).
+Documentation can be found on the [oaxmlapi wiki](https://github.com/23maverick23/oaxmlapi/wiki).
 
 ## BUGS
 Please use Git issues for logging and tracking the statuses of bugs.
