@@ -1,0 +1,28 @@
+# Git files #
+#############
+.gitmodules
+
+# Sublime project files #
+#########################
+*.sublime-project
+*.sublime-workspace
+
+# Test and debug files #
+########################
+*.xml
+*.html
+
+# Misc. documentation #
+#######################
+*.pdf
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
