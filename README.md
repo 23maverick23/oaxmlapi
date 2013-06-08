@@ -20,7 +20,7 @@ For Windows, download the latest build [here](https://github.com/23maverick23/oa
 For Linux and Mac OSX, you can use Terminal/iTerm to download, unpack and install.
 ```bash
 $ curl -LOk https://github.com/23maverick23/oaxmlapi/archive/master.zip
-$ unzip oaxmlapi.zip
+$ unzip master.zip
 $ cd oaxmlapi-master
 $ sudo python setup.py install
 ```
