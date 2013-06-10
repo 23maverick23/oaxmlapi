@@ -13,6 +13,7 @@ See [LICENSE.md](LICENSE.md)
 
 ## REQUIREMENTS
 - Python 2.5+ (2.7.3 recommended)
+- pytest 2.3.5+
 
 ## INSTALLATION
 For Windows, download the latest build [here](https://github.com/23maverick23/oaxmlapi/archive/master.zip) as archive. Unpack the archive and run `python setup.py install` inside the root directory.
@@ -26,7 +27,9 @@ $ sudo python setup.py install
 ```
 
 ## DOCUMENTATION
-Documentation can be found on the [oaxmlapi wiki](https://github.com/23maverick23/oaxmlapi/wiki).
+Documentation for this package can be found on the [oaxmlapi wiki](https://github.com/23maverick23/oaxmlapi/wiki).
+
+Documentation for the NetSuite OpenAir XML API can be found in the [PDF guide](http://www.openair.com/download/OpenAirXMLAPIGuide.pdf).
 
 ## BUGS
 Please use [issues](https://github.com/23maverick23/oaxmlapi/issues) for logging and tracking bugs or enhancements.
