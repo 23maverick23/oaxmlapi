@@ -149,7 +149,7 @@ class Read(object):
             f = {}
             f['filter'] = self.filter
             f['fieldname'] = self.fieldname
-            f['elem'] = self.datatype
+            f['datatype'] = self.datatype
             return f
 
 
