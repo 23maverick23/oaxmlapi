@@ -290,7 +290,6 @@ class Request(object):
             for elem in self.xml_data:
                 request.append(elem)
 
-        request = ET.tostring(request, 'utf-8')
         return request
 
     def tostring(self):
