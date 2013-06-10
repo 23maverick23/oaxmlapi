@@ -88,7 +88,7 @@ class Read(object):
 
                 if item['fieldname']:
                     field_list.append(item['fieldname'])
-                    elem.append(item['type'])
+                    elem.append(item['datatype'])
 
             if field_list:
                 attribs['field'] = ', '.join(field_list)
