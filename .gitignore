@@ -2,6 +2,10 @@
 #############
 .gitmodules
 
+# Exclude wiki #
+################
+wiki/
+
 # Sublime project files #
 #########################
 *.sublime-project
