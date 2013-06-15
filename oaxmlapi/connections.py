@@ -307,3 +307,49 @@ class Request(object):
         """
         reparsed = minidom.parseString(self.tostring())
         return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+
+
+class Error(object):
+    """
+    Use the Error command to return info about an error code.
+    Fetching errors does not require authentication, so this is 
+    a shortcut without having to create a Datatype and Read
+    command separatey.
+
+    Arguments:
+        code (str): an error code string
+
+    """
+    def __init__(self, code):
+        self.code = code
+
+    def __str__(self):
+        return "Error code %s" % self.code
+
+    def error(self):
+        """
+        Returns an ElementTree object containing XML error tags.
+
+        """
+        request = ET.Element('request')
+        read = ET.SubElement(request, 'Read')
+        read.attrib = {'type': 'Error', 'method': 'equal to'}
+        error = ET.SubElement(read, 'Error')
+        code = ET.SubElement(error, 'code')
+        code.text = self.code
+        return request
+
+    def tostring(self):
+        """
+        Return a string containing XML tags.
+
+        """
+        return ET.tostring(self.error(), 'utf-8')
+
+    def prettify(self):
+        """
+        Return a formatted, prettified string containing XML tags.
+
+        """
+        reparsed = minidom.parseString(self.tostring())
+        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
