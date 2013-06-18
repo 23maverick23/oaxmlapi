@@ -610,3 +610,122 @@ class Switch(object):
         """
         reparsed = minidom.parseString(self.tostring())
         return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+
+
+class MakeURL(object):
+    """
+    Use the MakeURL command to obtain a URL for a specific application page.
+
+    Arguments:
+        uid (str): a user id string
+        page (str): a page name string
+        app (str): an app string
+        arg (obj): a Datatype object
+
+    """
+    def __init__(self, uid, page, app, arg):
+        self.uid = uid
+        self.page = page
+        self.app = app
+        self.arg = arg
+
+    def __str__(self):
+        return "%s (%s)" % (self.page, self.app)
+
+    def makeurl(self):
+        """
+        Returns an ElementTree object containing an XML MakeURL tag.
+
+        """
+        makeurl = ET.Element('MakeURL')
+
+        uid = ET.Element('uid')
+        uid.text = self.uid
+
+        page = ET.Element('page')
+        page.text = self.page
+
+        app = ET.Element('app')
+        app.text = self.app
+
+        if self.arg:
+            arg = ET.Element('arg')
+            arg.append(self.arg.getDatatype())
+            makeurl.append(arg)
+
+        makeurl.append(uid)
+        makeurl.append(page)
+        makeurl.append(app)
+        return makeurl
+
+    def tostring(self):
+        """
+        Return a string containing XML tags.
+
+        """
+        return ET.tostring(self.makeurl(), 'utf-8')
+
+    def prettify(self):
+        """
+        Return a formatted, prettified string containing XML tags.
+
+        """
+        reparsed = minidom.parseString(self.tostring())
+        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+
+
+class Error(object):
+    """
+    Use the Error command to return info about an error code.
+    Fetching errors does not require authentication, so this is
+    a shortcut without having to create a Datatype and Read
+    command separately.
+
+    Arguments:
+        code (str): an error code string
+
+    """
+    def __init__(self, application, code):
+        self.application = application
+        self.code = code
+
+    def __str__(self):
+        return "Error code %s" % self.code
+
+    def error(self):
+        """
+        Returns an ElementTree object containing XML error tags.
+
+        """
+        request = ET.Element('request')
+        request.attrib = {
+            'API_ver': '1.0',
+            'client': self.application.client,
+            'client_ver': self.application.client_version,
+            'namespace': self.application.namespace,
+            'key': self.application.key
+        }
+
+        read = ET.SubElement(request, 'Read')
+        read.attrib = {'type': 'Error', 'method': 'equal to'}
+
+        error = ET.SubElement(read, 'Error')
+        code = ET.SubElement(error, 'code')
+        code.text = self.code
+        return request
+
+    def tostring(self):
+        """
+        Return a string containing XML tags.
+
+        """
+        header = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>'
+        return header + ET.tostring(self.error(), 'utf-8')
+
+    def prettify(self):
+        """
+        Return a formatted, prettified string containing XML tags.
+
+        """
+        reparsed = minidom.parseString(self.tostring())
+        return reparsed.toprettyxml(indent='  ', encoding='utf-8')

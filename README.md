@@ -34,5 +34,8 @@ Documentation for the NetSuite OpenAir XML API can be found in the [PDF guide](h
 ## BUGS
 Please use [issues](https://github.com/23maverick23/oaxmlapi/issues) for logging and tracking bugs or enhancements.
 
+## CREDITS
+See [CREDITS](CREDITS)
+
 ## HISTORY
 Current Version: 1.0
