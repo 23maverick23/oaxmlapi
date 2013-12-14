@@ -109,8 +109,8 @@ class RemoteAuth(object):
         Returns an ElementTree object containing an XML RemoteAuth tag.
 
         """
-        remoteAuth = ET.Element('RemoteAuth')
-        login = ET.SubElement(remoteAuth, 'Login')
+        remoteauth = ET.Element('RemoteAuth')
+        login = ET.SubElement(remoteauth, 'Login')
 
         company = ET.Element('company')
         company.text = self.company
@@ -124,7 +124,7 @@ class RemoteAuth(object):
         login.append(company)
         login.append(username)
         login.append(password)
-        return remoteAuth
+        return remoteauth
 
     def tostring(self):
         """
@@ -164,10 +164,8 @@ class Whoami(object):
         from components.datatypes import Datatype
 
         whoami = ET.Element('Whoami')
-        if isinstance(self.datatype, Datatype):
+        if isinstance(self.datatype, Datatype) and self.datatype.type == 'User':
             whoami.append(self.datatype.getDatatype())
-        elif isinstance(self.datatype, Auth):
-            whoami.append(self.datatype.auth())
         return whoami
 
     def tostring(self):
@@ -222,7 +220,11 @@ class Request(object):
             'namespace': self.application.namespace,
             'key': self.application.key
         }
-        request.append(self.auth.auth())
+
+        if isinstance(self.auth, Auth):
+            request.append(self.auth.auth())
+        elif isinstance(self.auth, RemoteAuth):
+            request.append(self.auth.remoteauth())
 
         if self.xml_data:
             for elem in self.xml_data:

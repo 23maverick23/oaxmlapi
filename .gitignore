@@ -6,6 +6,10 @@
 ################
 wiki/
 
+# Exclude sublime #
+###################
+sublime/
+
 # Sublime project files #
 #########################
 *.sublime-project
