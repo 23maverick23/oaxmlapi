@@ -91,10 +91,10 @@ class Read(object):
                     elem.append(item['datatype'])
 
             if field_list:
-                attribs['field'] = ', '.join(field_list)
+                attribs['field'] = ','.join(field_list)
 
             if filter_list:
-                attribs['filter'] = ', '.join(filter_list)
+                attribs['filter'] = ','.join(filter_list)
 
         # add all attribs to the XML element
         elem.attrib = attribs
