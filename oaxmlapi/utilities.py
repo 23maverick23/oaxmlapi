@@ -46,7 +46,7 @@ XML_DATATYPES = (
     'Schedulerequest_item', 'Slip', 'SlipProjection', 'Slipstage', 'TagGroup',
     'TagGroupAttribute', 'TargetUtilization', 'Task', 'TaskTimecard',
     'TaxLocation', 'TaxRate', 'Term', 'Ticket', 'Timecard', 'Timesheet',
-    'Timetype', 'Todo', 'Uprate', 'User', 'UserWorkSchedule', 'Vendor',
+    'Timetype', 'Todo', 'Uprate', 'User', 'UserWorkschedule', 'Vendor',
     'Viewfilter', 'Viewfilterrule', 'Workspacelink', 'Workspaceuser',
 )
 
