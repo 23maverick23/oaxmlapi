@@ -38,7 +38,7 @@ XML_DATATYPES = (
     'Projectlocation', 'Projectstage', 'Projecttask', 'Projecttask_type',
     'Projecttaskassign', 'Proposal', 'Proposalblock', 'Purchase_item',
     'Purchaseorder', 'Purchaser', 'Purchaserequest', 'Ratecard',
-    'RatecardItem', 'Reimbursement', 'Repeat', 'Report', 'Request_item',
+    'RateCardItem', 'Reimbursement', 'Repeat', 'Report', 'Request_item',
     'Resourceprofile', 'Resourceprofile_type', 'RevenueContainer',
     'Revenue_recognition_rule', 'Revenue_recognition_rule_amount',
     'Revenue_recognition_transaction', 'RevenueStage', 'Role',
