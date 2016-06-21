@@ -25,7 +25,7 @@ XML_DATATYPES = (
     'Costcenter', 'Costtype', 'Currency', 'Currencyrate', 'CustField',
     'Customer', 'Customerpo', 'Customerpo_to_project', 'CustomerProspect',
     'Date', 'Deal', 'Dealcontact', 'Dealschedule', 'Department', 'Entitytag',
-    'Envelope', 'Error', 'Estimate', 'Estimatedadjustment',
+    'Envelope', 'Error', 'Estimate', 'Estimateadjustment',
     'Estimateexpense', 'Estimatelabor', 'Estimatemarkup', 'Estimatephase',
     'Event', 'Filter', 'Filterset', 'Flag', 'ForexInput', 'Fulfillment',
     'Hierarchy', 'HierarchyNode', 'History', 'ImportExport', 'Invoice',
