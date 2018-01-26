@@ -27,7 +27,7 @@ class Application(object):
         self.key = key
 
     def __str__(self):
-        return "%s (v%s)" % (self.client, self.version)
+        return "%s (v%s)" % (self.client, self.client_version)
 
 
 class Auth(object):
