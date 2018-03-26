@@ -237,7 +237,7 @@ class Request(object):
         Return a string containing XML tags.
 
         """
-        header = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>'
+        header = b'<?xml version="1.0" encoding="utf-8" standalone="yes"?>'
         return header + ET.tostring(self.request(), 'utf-8')
 
     def prettify(self):
