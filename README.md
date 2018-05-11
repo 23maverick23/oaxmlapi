@@ -1,47 +1,32 @@
-# oaxmlapi
+# Basic Usage
 
-## DESCRIPTION
-oaxmlapi is a Python wrapper around the NetSuite OpenAir XML API.
+## Simple Example
 
-This library allows for easier interaction with the XML API, and reduces the need to generate raw XML. The library is written entirely in Python and utilizes the etree.ElementTree library for producing pre-formatted XML tags and attributes for use in your API requests.
+The focus of this package is simple - write Python, not XML. Here's an example which uses the `urllib2` library to make a simple HTTP request using some XML formatted data.
 
-## AUTHORS
-Ryan Morrissey - [ryancmorrissey.com](http://ryancmorrissey.com)
+```python
+import urllib2
+from oaxmlapi import connections, datatypes, commands
 
-## LICENSE
-See [LICENSE.md](LICENSE.md)
+app = connections.Application('test app', '1.0', 'default', 'uniquekey')
+auth = connections.Auth('My Company', 'Admin', 'p@ssw0rd')
 
-## REQUIREMENTS
-- Python 2.5+ (2.7.3 recommended)
-- pytest 2.3.5+
+date = datatypes.Datatype('Date', {'month': '03', 'day': '14', 'year': '2012'})
+task = datatypes.Datatype('Task', {'projectid': '13'})
 
-## INSTALLATION
-For Windows, download the latest build [here](https://github.com/23maverick23/oaxmlapi/archive/master.zip) as archive. Unpack the archive and run `python setup.py install` inside the root directory.
+filter1 = commands.Read.Filter('newer-than', 'date', date).getFilter()
+filter2 = commands.Read.Filter(None, None, task).getFilter()
 
-For Linux and Mac OSX, you can use Terminal/iTerm to download, unpack and install.
-```bash
-$ curl -LOk https://github.com/23maverick23/oaxmlapi/archive/master.zip
-$ unzip master.zip
-$ cd oaxmlapi-master
-$ sudo python setup.py install
+xml_data = []
+xml_data.append(commands.Read('Task', 'equal to', {'limit': '1000'}, [filter1, filter2], ['id', 'timesheetid']).read())
+xml_req = connections.Request(app, auth, xml_data).tostring()
+
+req = urllib2.Request(url='https://www.openair.com/api.pl', data=xml_req)
 ```
 
-## DOCUMENTATION
-Documentation for this package can be found on the [oaxmlapi wiki](https://github.com/23maverick23/oaxmlapi/wiki).
+{% hint style="danger" %}
+This package is not designed to do any validation or type checking on your API inputs - it is simply a wrapper around the OpenAir XML API allowing you to write more Pythonic objects which easily convert to XML bytestrings for use in HTTP requests.
+{% endhint %}
 
-Documentation for the NetSuite OpenAir XML API can be found in the [PDF guide](http://www.openair.com/download/OpenAirXMLAPIGuide.pdf).
 
-## BUGS
-Please use [issues](https://github.com/23maverick23/oaxmlapi/issues) for logging and tracking bugs or enhancements.
 
-## CREDITS
-See [CREDITS](CREDITS)
-
-## HISTORY
-Current Version: 1.1
-
-* Small bug fixes
-
-Version 1.0
-
-* Initial commit
