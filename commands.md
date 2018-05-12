@@ -280,6 +280,46 @@ print xml_data.tostring()
 >>> '<Modify type="Invoice"><Invoice><id>476</id></Invoice></Modify>'
 ```
 
+## ModifyOnCondition
+
+Use the ModifyOnCondition command to perform actions such as updating the external_id of a record type only if the update time on the OpenAir server is older.
+
+| **attribute** | **type** | **description** |
+| --- | --- | --- |
+| type | String | an OpenAir complex type |
+| datatype1 | Datatype | a datatype.Datatpe object |
+| datatype2 | Datatype | a datatype.Datatpe object |
+
+### modify
+
+Returns an _ElementTree_ object.
+
+### tostring
+
+Returns a string of XML tags.
+
+### prettify
+
+Return a formatted, prettified string containing XML tags.
+
+```python
+# create datatype object for modifying a record
+invoice = datatypes.Datatype(
+    'Invoice',
+    {'id': '476', 'external_id': '123456789'}
+)
+
+date = datatypes.Datatype(
+    'Date',
+    {'month': '03', 'day': '14', 'year': '2012', 'hour': '08', 'minute': '35', 'second': '43'}
+)
+
+# create modifyoncondition object
+xml_data = commands.ModifyOnCondition('Invoice', invoice, date)
+print xml_data.tostring()
+>>> '<ModifyOnCondition condition="if-not-updated" type="Invoice"><Invoice><id>476</id><external_id>123456789</external_id></Invoice><Date><hour>08</hour><month>03</month><second>43</second><year>2012</year><day>14</day><minute>35</minute></Date></ModifyOnCondition>'
+```
+
 ## Submit
 
 Use the Submit command to submit records for approval.

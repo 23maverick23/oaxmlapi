@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='oaxmlapi',
-    version='1.1',
+    version='1.0.0',
     author='Ryan Morrissey',
     author_email='contactme@ryancmorrissey.com',
     packages=find_packages(),
