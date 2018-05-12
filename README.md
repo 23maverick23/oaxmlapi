@@ -29,8 +29,8 @@ $ sudo python setup.py install
 
 ## DOCUMENTATION
 
-- Documentation for this package can be found on Gitbook at [https://23maverick23.gitbook.io/oaxmlapi/]().
-- Documentation for the NetSuite OpenAir XML API can be found at [http://www.openair.com/download/OpenAirXMLAPIGuide.pdf]().
+- Documentation for this package can be found on Gitbook at [https://23maverick23.gitbook.io/oaxmlapi/](https://23maverick23.gitbook.io/oaxmlapi/).
+- Documentation for the NetSuite OpenAir XML API can be found at [http://www.openair.com/download/OpenAirXMLAPIGuide.pdf](http://www.openair.com/download/OpenAirXMLAPIGuide.pdf).
 
 ## BASIC EXAMPLE
 
