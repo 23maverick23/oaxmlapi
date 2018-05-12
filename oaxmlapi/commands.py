@@ -47,14 +47,16 @@ class Read(object):
         method (str): a valid read method
         attribs (dict): a dictionary containing read attributes
         filters (list): a list of filter types
+        orderby (list): a dictionary containing order attributes (field, order)
         return_fields (list): a list of fields to return
 
     """
-    def __init__(self, type, method, attribs, filters, fields):
+    def __init__(self, type, method, attribs, filters=None, orderby=None, fields=None):
         self.type = type
         self.method = method
         self.attribs = attribs
         self.filters = filters
+        self.orderby = orderby
         self.fields = fields
 
     def __str__(self):
@@ -95,6 +97,12 @@ class Read(object):
 
             if filter_list:
                 attribs['filter'] = ','.join(filter_list)
+
+        # apply return order, if provided
+        if self.orderby:
+            field = self.orderby.get('field', 'id')
+            order = self.orderby.get('order', 'asc')
+            attribs['order'] = ','.join([field, order])
 
         # add all attribs to the XML element
         elem.attrib = attribs
@@ -352,6 +360,56 @@ class Modify(object):
 
         elem.attrib = attribs
         elem.append(self.datatype)
+        return elem
+
+    def tostring(self):
+        """
+        Return a string containing XML tags.
+
+        """
+        return ET.tostring(self.modify(), 'utf-8')
+
+    def prettify(self):
+        """
+        Return a formatted, prettified string containing XML tags.
+
+        """
+        reparsed = minidom.parseString(self.tostring())
+        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+
+
+class ModifyOnCondition(object):
+    """
+    Use the ModifyOnCondition command to perform actions such as
+    updating the external_id of a record type only if the update
+    time on the OpenAir server is older.
+
+    Arguments:
+        type (str): a valid XML type
+        datatype1 (obj): a valid Datatype() object
+        datatype2 (obj): a valid Datatype() object of type "Date"
+
+    """
+    def __init__(self, type, datatype1, datatype2):
+        self.type = type
+        self.datatype1 = datatype1.getDatatype()
+        self.datatype2 = datatype2.getDatatype()
+
+    def __str__(self):
+        return 'Modify "%s"' % self.type
+
+    def modify(self):
+        """
+        Returns an ElementTree object containing modify on condition tags.
+
+        """
+        elem = ET.Element('ModifyOnCondition')
+        attribs = {}
+        attribs['condition'] = "if-not-updated"
+        attribs['type'] = self.type
+        elem.attrib = attribs
+        elem.append(self.datatype1)
+        elem.append(self.datatype2)
         return elem
 
     def tostring(self):

@@ -1,0 +1,26 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [1.0.0] - 2018-05-11
+### Added
+- Gitbook documentation pages
+- ModifyOnCondition command
+- Start using CHANGELOG file for documented releases
+- Start using semantic versioning via commit tags
+
+### Changed
+- Updated README.md (related to Gitbook)
+- Updated LICENSE with current year
+- Updated setup.py version back to 1.0.0
+- Updated .gitignore
+
+### Removed
+- Removed wiki from repository
+- Removed unnecessary static variables from utilities.py
+
+[Unreleased]: https://github.com/23maverick23/oaxmlapi/compare/v1.0.0...HEAD
