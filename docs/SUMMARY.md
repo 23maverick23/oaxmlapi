@@ -5,3 +5,4 @@
 * [Commands](commands.md)
 * [Datatypes](datatypes.md)
 * [Utilities](utilities.md)
+* [Tests](tests.md)

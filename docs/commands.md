@@ -8,18 +8,16 @@ description: The commands.py module is used to generate XML API command tags.
 
 This command take no attributes and returns the current servertime.
 
-```python
-print commands.Time().tostring()
->>> '<Time />'
-```
-
 ### time
 
 Returns an _ElementTree_ object.
 
-### tostring
+```python
+print(commands.Time().tostring())
+>>> b'<Time/>'
+```
 
-Returns a string of XML tags.
+> Supports `tostring()` and `prettify()`.
 
 ## Read
 
@@ -29,50 +27,30 @@ This command is used to read objects.
 | --- | --- | --- |
 | type | String | an OpenAir complex type |
 | method | String | one of: all, equal to, not equal to, custom equal to, user, project, not exported |
-| attribs | Object | one of: limit, deleted, include\_flags_, _include\_nondeleted_, _with\_project\_only, base\_currency, generic, enable\_custom |
-| filters | Array | a list of Filter objects |
-| fields | Array | a list of field names |
+| attribs | Dict | one of: limit, deleted, include\_flags_, _include\_nondeleted_, _with\_project\_only, base\_currency, generic, enable\_custom |
+| filters | List | a list of Filter objects |
+| orderby | Dict | keys: field, order (default 'asc') |
+| fields | List | a list of field names |
 
 ### read
 
 Returns an _ElementTree_ object.
 
-### tostring
-
-Returns a string of XML tags.
-
-### prettify
-
-Return a formatted, prettified string containing XML tags.
-
-{% hint style="warning" %}
-All attributes must be provided in the Read method. If an attribute doesn't apply, pass in an empty array/dictionary or None.
-{% endhint %}
-
-Example of a simple date object.
-
 ```python
-date = datatypes.Datatype(
-    'Date',
-    {
-        'month': '11',
-        'day': '24',
-        'year': '2013'
-    }
-)
-```
-
-Example of a simple slip \(charge\) object.
-
-```python
-slip = datatypes.Datatype(
+xml_data = commands.Read(
     'Slip',
-    {
-        'customerid': '7',
-        'projectid': '14'
-    }
-)
+    'all',
+    {'limit': '0, 1000'},
+    None,
+    None,
+    ['customerid', 'id', 'projectid']
+).read()
+
+print(xml_data)
+>>> b'<Read limit="0, 1000" method="all" type="Slip"><_Return><customerid /><id /><projectid /></_Return></Read>'
 ```
+
+> Supports `tostring()` and `prettify()`.
 
 ## Read.Filter
 
@@ -84,47 +62,51 @@ This command is used to create read filter objects.
 | field | String \| None | a field name to filter on |
 | datatype | Datatype | a datatype.Datatpe object |
 
-{% hint style="warning" %}
-The Filter method requires a Datatype object, so make sure you create one before referencing it in this method.
-{% endhint %}
-
 ### getFilter
 
 Returns a dictionary containing filter data.
 
-Example of a date filter.
-
 ```python
+date = datatypes.Datatype(
+    'Date',
+    {
+        'month': '11',
+        'day': '24',
+        'year': '2013'
+    }
+)
+
+slip = datatypes.Datatype(
+    'Slip',
+    {
+        'customerid': '7',
+        'projectid': '14'
+    }
+)
+
 filter1 = commands.Read.Filter(
     'older-than',
     'date',
     date
 ).getFilter()
-```
 
-Example of a slip \(charge\) filter.
-
-```python
 filter2 = commands.Read.Filter(
     None,
     None,
     slip
 ).getFilter()
-```
 
-To create your final Read, just pass your Filter objects to the Read method.
-
-```python
 xml_data = commands.Read(
     'Slip',
     'equal to',
     {'limit': '0, 1000'},
     [filter1, filter2],
+    None,
     ['customerid', 'id', 'projectid']
 ).read()
 
-print xml_data
->>> '<Read deleted="1" field="date" filter="older-than" limit="0, 1000" method="equal to" type="Slip"><Date><year>2013</year><day>24</day><month>11</month></Date><Slip><projectid>14</projectid><customerid>7</customerid></Slip><_Return><customerid /><id /><projectid /></_Return></Read>'
+print(xml_data)
+>>> b'<Read field="date" filter="older-than" limit="0, 1000" method="equal to" type="Slip"><Date><year>2013</year><day>24</day><month>11</month></Date><Slip><projectid>14</projectid><customerid>7</customerid></Slip><_Return><customerid /><id /><projectid /></_Return></Read>'
 ```
 
 ## Report
@@ -139,20 +121,6 @@ Use the Report command to run a report and email a PDF copy of a Timesheet, Enve
 ### getReport
 
 Returns an _ElementTree_ object.
-
-### tostring
-
-Returns a string of XML tags.
-
-### prettify
-
-Return a formatted, prettified string containing XML tags.
-
-{% hint style="warning" %}
-This command only supports three datatypes today: Timesheet, Envelope, or Report
-{% endhint %}
-
-Example usage.
 
 ```python
 # create datatype object
@@ -169,9 +137,11 @@ xml_data = commands.Report(
     'Timesheet',
     report
 )
-print xml_data.tostring()
->>> '<Report type="Timesheet"><Timesheet><relatedid>1286</relatedid><email_report>1</email_report></Timesheet></Report>'
+print(xml_data.tostring())
+>>> b'<Report type="Timesheet"><Timesheet><relatedid>1286</relatedid><email_report>1</email_report></Timesheet></Report>'
 ```
+
+> Supports `tostring()` and `prettify()`.
 
 ## Add
 
@@ -180,20 +150,12 @@ Use the Add command to add records.
 | **attribute** | **type** | **description** |
 | --- | --- | --- |
 | type | String | an OpenAir complex type |
-| attribs | Object | one of: enable\_custom |
+| attribs | Dict | one of: enable\_custom |
 | datatype | Datatype | a datatype.Datatpe object |
 
 ### add
 
 Returns an _ElementTree_ object.
-
-### tostring
-
-Returns a string of XML tags.
-
-### prettify
-
-Return a formatted, prettified string containing XML tags.
 
 ```python
 # create datatype object for adding a date record
@@ -210,9 +172,11 @@ project = datatypes.Datatype(
 
 # create add object
 xml_data = commands.Add('Project', {}, project)
-print xml_data.tostring()
->>> '<Add type="Project"><Project><start_date><Date><year>2013</year><day>10</day><month>06</month></Date></start_date><userid>1</userid><name>New project</name><customerid>7</customerid></Project></Add>'
+print(xml_data.tostring())
+>>> b'<Add type="Project"><Project><start_date><Date><year>2013</year><day>10</day><month>06</month></Date></start_date><userid>1</userid><name>New project</name><customerid>7</customerid></Project></Add>'
 ```
+
+> Supports `tostring()` and `prettify()`.
 
 ## Delete
 
@@ -223,27 +187,21 @@ Use the Delete command to delete records.
 | type | String | an OpenAir complex type |
 | datatype | Datatype | a datatype.Datatpe object |
 
+### delete
+
+Returns an _ElementTree_ object.
+
 ```python
 slip = datatypes.Datatype(
     'Slip',
     {'id': '1428'}
 )
 xml_data = commands.Delete('Slip', slip)
-print xml_data.tostring()
->>> '<Delete type="Slip"><Slip><id>1428</id></Slip></Delete>'
+print(xml_data.tostring())
+>>> b'<Delete type="Slip"><Slip><id>1428</id></Slip></Delete>'
 ```
 
-### delete
-
-Returns an _ElementTree_ object.
-
-### tostring
-
-Returns a string of XML tags.
-
-### prettify
-
-Return a formatted, prettified string containing XML tags.
+> Supports `tostring()` and `prettify()`.
 
 ## Modify
 
@@ -252,20 +210,12 @@ Use the Modify command to modify records.
 | **attribute** | **type** | **description** |
 | --- | --- | --- |
 | type | String | an OpenAir complex type |
-| attribs | Object | one of: enable\_custom |
+| attribs | Dict | one of: enable\_custom |
 | datatype | Datatype | a datatype.Datatpe object |
 
 ### modify
 
 Returns an _ElementTree_ object.
-
-### tostring
-
-Returns a string of XML tags.
-
-### prettify
-
-Return a formatted, prettified string containing XML tags.
 
 ```python
 # create datatype object for modifying a record
@@ -276,9 +226,11 @@ invoice = datatypes.Datatype(
 
 # create modify object
 xml_data = commands.Modify('Invoice', {}, invoice)
-print xml_data.tostring()
->>> '<Modify type="Invoice"><Invoice><id>476</id></Invoice></Modify>'
+print(xml_data.tostring())
+>>> b'<Modify type="Invoice"><Invoice><id>476</id></Invoice></Modify>'
 ```
+
+> Supports `tostring()` and `prettify()`.
 
 ## ModifyOnCondition
 
@@ -294,14 +246,6 @@ Use the ModifyOnCondition command to perform actions such as updating the extern
 
 Returns an _ElementTree_ object.
 
-### tostring
-
-Returns a string of XML tags.
-
-### prettify
-
-Return a formatted, prettified string containing XML tags.
-
 ```python
 # create datatype object for modifying a record
 invoice = datatypes.Datatype(
@@ -316,9 +260,11 @@ date = datatypes.Datatype(
 
 # create modifyoncondition object
 xml_data = commands.ModifyOnCondition('Invoice', invoice, date)
-print xml_data.tostring()
->>> '<ModifyOnCondition condition="if-not-updated" type="Invoice"><Invoice><id>476</id><external_id>123456789</external_id></Invoice><Date><hour>08</hour><month>03</month><second>43</second><year>2012</year><day>14</day><minute>35</minute></Date></ModifyOnCondition>'
+print(xml_data.tostring())
+>>> b'<ModifyOnCondition condition="if-not-updated" type="Invoice"><Invoice><id>476</id><external_id>123456789</external_id></Invoice><Date><hour>08</hour><month>03</month><second>43</second><year>2012</year><day>14</day><minute>35</minute></Date></ModifyOnCondition>'
 ```
+
+> Supports `tostring()` and `prettify()`.
 
 ## Submit
 
@@ -333,14 +279,6 @@ Use the Submit command to submit records for approval.
 ### submit
 
 Returns an _ElementTree_ object.
-
-### tostring
-
-Returns a string of XML tags.
-
-### prettify
-
-Return a formatted, prettified string containing XML tags.
 
 ```python
 # create datatype object to submit
@@ -357,9 +295,11 @@ approval = datatypes.Datatype(
 
 # create submit object
 xml_data = commands.Submit('Timesheet', timesheet, approval)
-print xml_data.tostring()
->>> '<Submit type="Timesheet"><Timesheet><id>476</id></Timesheet><Approval><cc>name@company.com</cc><notes>submit notes</notes></Approval></Submit>'
+print(xml_data.tostring())
+>>> b'<Submit type="Timesheet"><Timesheet><id>476</id></Timesheet><Approval><cc>name@company.com</cc><notes>submit notes</notes></Approval></Submit>'
 ```
+
+> Supports `tostring()` and `prettify()`.
 
 ## CreateAccount
 
@@ -373,14 +313,6 @@ Use the CreateAccount command to create a new OpenAir account.
 ### create
 
 Returns an _ElementTree_ object.
-
-### tostring
-
-Returns a string of XML tags.
-
-### prettify
-
-Return a formatted, prettified string containing XML tags.
 
 ```python
 # create datatype object for company
@@ -397,9 +329,11 @@ user = datatypes.Datatype(
 
 # create createaccount object
 xml_data = commands.CreateAccount(company, user)
-print xml_data.tostring()
->>> '<CreateAccount><Company><nickname>New Account</nickname></Company><User><password>p@ssw0rd</password><nickname>JAdmin</nickname><addr><Address><email>jadmin@company.com</email></Address></addr></User></CreateAccount>'
+print(xml_data.tostring())
+>>> b'<CreateAccount><Company><nickname>New Account</nickname></Company><User><password>p@ssw0rd</password><nickname>JAdmin</nickname><addr><Address><email>jadmin@company.com</email></Address></addr></User></CreateAccount>'
 ```
+
+> Supports `tostring()` and `prettify()`.
 
 ## CreateUser
 
@@ -414,28 +348,18 @@ Use the CreateUser command to create a new OpenAir user.
 
 Returns an _ElementTree_ object.
 
-### tostring
-
-Returns a string of XML tags.
-
-### prettify
-
-Return a formatted, prettified string containing XML tags.
-
 ```python
 # CreateUser is identical to CreateAccount
 xml_data = commands.CreateUser(company, user)
-print xml_data.tostring()
->>> '<CreateUser><Company><nickname>New Account</nickname></Company><User><password>p@ssw0rd</password><nickname>JAdmin</nickname><addr><Address><email>jadmin@company.com</email></Address></addr></User></CreateUser>'
+print(xml_data.tostring())
+>>> b'<CreateUser><Company><nickname>New Account</nickname></Company><User><password>p@ssw0rd</password><nickname>JAdmin</nickname><addr><Address><email>jadmin@company.com</email></Address></addr></User></CreateUser>'
 ```
+
+> Supports `tostring()` and `prettify()`.
 
 ## Switch
 
 Use the Switch command to customize the appearance of the product using switches and settings.
-
-{% hint style="warning" %}
-This command only supports two types today: User or Company
-{% endhint %}
 
 | **attribute** | **type** | **description** |
 | --- | --- | --- |
@@ -446,20 +370,38 @@ This command only supports two types today: User or Company
 
 Returns an _ElementTree_ object.
 
-### tostring
-
-Returns a string of XML tags.
-
-### prettify
-
-Return a formatted, prettified string containing XML tags.
-
 ```python
 flag = datatypes.Datatype(
     'Flag',
     {'name': '_switch_name', 'setting': '1'}
 )
 xml_data = commands.Switch('User', flag)
-print xml_data.tostring()
->>> '<User><flags><Flag><setting>1</setting><name>_switch_name</name></Flag></flags></User>'
+print(xml_data.tostring())
+>>> b'<User><flags><Flag><setting>1</setting><name>_switch_name</name></Flag></flags></User>'
 ```
+
+> Supports `tostring()` and `prettify()`.
+
+## MakeURL
+
+Use the MakeURL command to obtain a URL for a specific application and screen.
+
+| **attribute** | **type** | **description** |
+| --- | --- | --- |
+| uid | String | the id of a valid logged in user |
+| page | String | one of: default-url, company-settings, currency-rates, import-export, custom-fields, list-reports, list-customers, list-projects, list-prospects, list-resources, list-timesheets, create-timesheet, list-timebills, list-invoices, create-invoice, list-envelope-receipts, list-envelopes, create-envelope, create-envelope-receipt, dashboard, list-purchase-requests, quick-search-resources, custom-search-resources, view-invoice, dashboard-project, grid-timesheet, report-timesheet |
+| app | String | one of: 'km', 'ma', 'pb', 'rm', 'pm', 'ta, 'te', or 'tb' |
+| arg | Datatype | a datatype.Datatpe object |
+
+### makeurl
+
+Returns an _ElementTree_ object.
+
+```python
+timesheet = datatypes.Datatype('Timesheet', {'id': '1245'})
+xml_data = commands.MakeURL('1', 'grid-timesheet', 'ta', timesheet)
+print(xml_data.tostring())
+>>> b'<MakeURL><arg><Timesheet><id>1245</id></Timesheet></arg><uid>1</uid><page>grid-timesheet</page><app>ta</app></MakeURL>'
+```
+
+> Supports `tostring()` and `prettify()`.

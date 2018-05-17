@@ -1,12 +1,18 @@
 # -*- coding: utf-8
+"""The connections.py module allows for the creation of an app
+which will contain required information for the API. It also
+allows for the storage of login information for authentication.
+"""
 
-from __future__ import absolute_import
-from xml.dom import minidom
+from __future__ import absolute_import, print_function
 
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
+
+from oaxmlapi.base import _Base
+from oaxmlapi.datatypes import Datatype
 
 
 class Application(object):
@@ -27,10 +33,11 @@ class Application(object):
         self.key = key
 
     def __str__(self):
-        return "%s (v%s)" % (self.client, self.client_version)
+        return "<Application client={client} version={version}>".format(
+            client=self.client, version=self.client_version)
 
 
-class Auth(object):
+class Auth(_Base):
     """
     Use the Auth command to collect authentication information.
 
@@ -41,12 +48,14 @@ class Auth(object):
 
     """
     def __init__(self, company, username, password):
+        _Base.__init__(self)
         self.company = company
         self.username = username
         self.password = password
 
     def __str__(self):
-        return "%s, %s, *****" % (self.company, self.username)
+        return "<Auth company={company} username={username}>".format(
+            company=self.company, username=self.username)
 
     def auth(self):
         """
@@ -70,23 +79,11 @@ class Auth(object):
         login.append(password)
         return auth
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.auth(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.auth()
 
 
-class RemoteAuth(object):
+class RemoteAuth(_Base):
     """
     Use the RemoteAuth command to log in to an individual user account.
 
@@ -97,12 +94,14 @@ class RemoteAuth(object):
 
     """
     def __init__(self, company, username, password):
+        _Base.__init__(self)
         self.company = company
         self.username = username
         self.password = password
 
     def __str__(self):
-        return "%s, %s, *****" % (self.company, self.username)
+        return "<RemoteAuth company={company} username={username}>".format(
+            company=self.company, username=self.username)
 
     def remoteauth(self):
         """
@@ -126,23 +125,11 @@ class RemoteAuth(object):
         login.append(password)
         return remoteauth
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.remoteauth(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.remoteauth()
 
 
-class Whoami(object):
+class Whoami(_Base):
     """
     Use the Whoami command to return info about the authenticated user.
 
@@ -151,40 +138,40 @@ class Whoami(object):
 
     """
     def __init__(self, datatype):
+        _Base.__init__(self)
         self.datatype = datatype
 
     def __str__(self):
-        return "Whoami object"
+        return "<Whoami>"
+
+    @property
+    def datatype(self):
+        return self._datatype
+
+    @datatype.setter
+    def datatype(self, d):
+        if not isinstance(d, Datatype):
+            raise Exception('you must pass a Datatype object')
+        elif not d.type == 'User':
+            raise Exception('you must pass a User Datatype not "{type}"').format(
+                type=d.type
+            )
+        self._datatype = d
 
     def whoami(self):
         """
         Returns an ElementTree object containing an XML Whoami tag.
 
         """
-        from components.datatypes import Datatype
-
         whoami = ET.Element('Whoami')
-        if isinstance(self.datatype, Datatype) and self.datatype.type == 'User':
-            whoami.append(self.datatype.getDatatype())
+        whoami.append(self.datatype.getDatatype())
         return whoami
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.whoami(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.whoami()
 
 
-class Request(object):
+class Request(_Base):
     """
     Use the Request command to create a complete XML request with tags.
 
@@ -195,16 +182,16 @@ class Request(object):
 
     """
     def __init__(self, application, auth, xml_data):
+        _Base.__init__(self)
         self.application = application
         self.auth = auth
         self.xml_data = xml_data
+        self._header = True
 
     def __str__(self):
-        return '"%s" request as %s\%s' % (
-            self.application.client,
-            self.auth.company,
-            self.auth.username
-        )
+        return '<Request client={client} company={company} username={username}>'.format(
+            client=self.application.client, company=self.auth.company,
+            username=self.auth.username)
 
     def request(self):
         """
@@ -225,6 +212,8 @@ class Request(object):
             request.append(self.auth.auth())
         elif isinstance(self.auth, RemoteAuth):
             request.append(self.auth.remoteauth())
+        else:
+            raise Exception('you must pass an Auth or RemoteAuth instance')
 
         if self.xml_data:
             for elem in self.xml_data:
@@ -232,18 +221,50 @@ class Request(object):
 
         return request
 
-    def tostring(self):
+    def _main(self):
+        return self.request()
+
+class Error(_Base):
+    """
+    Use the Error command to return info about an error code.
+    Fetching errors does not require authentication, so this is
+    a shortcut without having to create a Datatype and Read
+    command separately.
+
+    Arguments:
+        code (str): an error code string
+
+    """
+    def __init__(self, application, code):
+        _Base.__init__(self)
+        self.application = application
+        self.code = str(code)
+        self._header = True
+
+    def __str__(self):
+        return "<Error code={code}>".format(code=self.code)
+
+    def error(self):
         """
-        Return a string containing XML tags.
+        Returns an ElementTree object containing XML error tags.
 
         """
-        header = b'<?xml version="1.0" encoding="utf-8" standalone="yes"?>'
-        return header + ET.tostring(self.request(), 'utf-8')
+        request = ET.Element('request')
+        request.attrib = {
+            'API_ver': '1.0',
+            'client': self.application.client,
+            'client_ver': self.application.client_version,
+            'namespace': self.application.namespace,
+            'key': self.application.key
+        }
 
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
+        read = ET.SubElement(request, 'Read')
+        read.attrib = {'type': 'Error', 'method': 'equal to'}
 
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+        error = ET.SubElement(read, 'Error')
+        code = ET.SubElement(error, 'code')
+        code.text = self.code
+        return request
+
+    def _main(self):
+        return self.error()

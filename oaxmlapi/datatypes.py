@@ -1,16 +1,20 @@
 # -*- coding: utf-8
+"""The datatypes.py module is used to generate XML API datatype
+objects and tags.
+"""
 
-from __future__ import absolute_import
-from xml.dom import minidom
-from oaxmlapi.utilities import ADDRESS_FIELDS
+from __future__ import absolute_import, print_function
 
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
 
+from oaxmlapi.base import _Base
+from oaxmlapi.utilities import ADDRESS_FIELDS
 
-class Datatype(object):
+
+class Datatype(_Base):
     """
     Use the type object to create an XML type.
 
@@ -19,11 +23,12 @@ class Datatype(object):
 
     """
     def __init__(self, type, fields):
+        _Base.__init__(self)
         self.type = type
         self.fields = fields
 
     def __str__(self):
-        return '"%s" datatype object' % self.type
+        return '<Datatype type={type}>'.format(type=self.type)
 
     def getDatatype(self):
         """
@@ -47,7 +52,7 @@ class Datatype(object):
             for key in self.fields:
                 address_set = False
                 if key in ADDRESS_FIELDS:
-                    if not address_set:
+                    if not address_set:  # pragma: no cover
                         addr = ET.SubElement(elem, 'addr')
                         address = ET.SubElement(addr, 'Address')
                         address_set = True
@@ -61,17 +66,5 @@ class Datatype(object):
                     subelem.text = self.fields[key]
         return elem
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.getDatatype(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.getDatatype()

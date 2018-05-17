@@ -1,20 +1,42 @@
 # -*- coding: utf-8
+"""The utilities.py module provides a few helper methods for working
+with XML.
+"""
+
+import json
 
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
 
-ADDRESS_FIELDS = (
-    'first', 'middle', 'last', 'salutation', 'email', 'phone',
-    'fax', 'mobile', 'addr1', 'addr2', 'addr3', 'addr4',
-    'city', 'state', 'zip', 'country'
-)
+ADDRESS_FIELDS = ('first', 'middle', 'last', 'salutation', 'email', 'phone',
+    'fax', 'mobile', 'addr1', 'addr2', 'addr3', 'addr4', 'city', 'state',
+    'zip', 'country', )
+
+READ_METHODS = ('all', 'equal to', 'not equal to', 'custom equal to', 'user',
+    'project', 'not exported', )
+
+READ_ATTRIBUTES = ('limit', 'deleted', 'include_flags', '_include_nondeleted',
+    '_with_project_only', 'base_currency', 'generic', 'enable_custom', )
+
+REPORT_TYPES = ('Envelope', 'Timesheet', 'Report', )
+
+SUBMIT_TYPES = ('Envelope', 'Timesheet', 'Invoice', )
+
+SWITCH_TYPES = ('Company', 'User', )
+
+PAGE_ATTRIBUTES = ('default-url', 'company-settings', 'currency-rates',
+    'import-export', 'custom-fields', 'list-reports', 'list-customers',
+    'list-projects', 'list-prospects', 'list-resources', 'list-timesheets',
+    'create-timesheet', 'list-timebills', 'list-invoices', 'create-invoice',
+    'list-envelope-receipts', 'list-envelopes', 'create-envelope',
+    'create-envelope-receipt', 'dashboard', 'list-purchase-requests',
+    'quick-search-resources', 'custom-search-resources', 'view-invoice',
+    'dashboard-project', 'grid-timesheet', 'report-timesheet', )
+
+APP_ATTRIBUTES = ('km', 'ma', 'pb', 'rm', 'pm', 'ta', 'te', 'tb', )
 
 
 def elem2dict(elem, strip=True):
@@ -52,15 +74,15 @@ def elem2dict(elem, strip=True):
         # ignore leading and trailing whitespace
         if text:
             text = text.strip()
-        if tail:
+        if tail:  # pragma: no cover
             tail = tail.strip()
 
-    if tail:
+    if tail:  # pragma: no cover
         d['#tail'] = tail
 
     if d:
         # use #text element if other attributes exist
-        if text:
+        if text:  # pragma: no cover
             d["#text"] = text
     else:
         # text is the value if no attributes

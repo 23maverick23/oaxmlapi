@@ -1,0 +1,9 @@
+{
+    "structure": { 
+        "summary": "docs/SUMMARY.md" 
+    },
+    "title": "oaxmlapi",
+    "description": "oaxmlapi is a Python wrapper around the NetSuite OpenAir XML API. It allows for easier interaction with the XML version of the OpenAir API and reduces the need to generate raw XML. The library is written entirely in Python and utilizes the etree.ElementTree library for producing pre-formatted XML tags and attributes for use in your API requests.",
+    "author": "Ryan Morrissey (ryancmorrissey.com)",
+    "language": "en"
+}

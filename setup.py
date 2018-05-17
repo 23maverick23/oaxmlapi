@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='oaxmlapi',
-    version='1.0.0',
+    version='1.1.0',
     author='Ryan Morrissey',
     author_email='contactme@ryancmorrissey.com',
     packages=find_packages(),
@@ -11,8 +11,5 @@ setup(
     license='LICENSE',
     description='A Python wrapper around the NetSuite OpenAir XML API.',
     long_description=open('README.md').read(),
-    install_requires=[
-        "simplejson"
-    ],
     zip_safe=False,
 )

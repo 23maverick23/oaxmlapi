@@ -1,15 +1,20 @@
 # -*- coding: utf-8
+"""The commands.py module is used to generate XML API command tags.
+"""
 
 from __future__ import absolute_import
-from xml.dom import minidom
 
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
 
+from oaxmlapi.base import _Base
+from oaxmlapi.utilities import (READ_METHODS, REPORT_TYPES, SUBMIT_TYPES,
+    SWITCH_TYPES, PAGE_ATTRIBUTES, APP_ATTRIBUTES, )
 
-class Time(object):
+
+class Time(_Base):
     """
     The Time command returns the current time on our servers.
 
@@ -18,10 +23,10 @@ class Time(object):
 
     """
     def __init__(self):
-        pass
+        _Base.__init__(self)
 
     def __str__(self):
-        return "time object"
+        return "<Time>"
 
     def time(self):
         """
@@ -30,15 +35,11 @@ class Time(object):
         """
         return ET.Element('Time')
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.time(), 'utf-8')
+    def _main(self):
+        return self.time()
 
 
-class Read(object):
+class Read(_Base):
     """
     Use the read command to retrieve data from OpenAir.
 
@@ -52,6 +53,7 @@ class Read(object):
 
     """
     def __init__(self, type, method, attribs, filters=None, orderby=None, fields=None):
+        _Base.__init__(self)
         self.type = type
         self.method = method
         self.attribs = attribs
@@ -60,7 +62,19 @@ class Read(object):
         self.fields = fields
 
     def __str__(self):
-        return "%s (method: %s)" % (self.type, self.method, )
+        return "<Read type={type} method={method}>".format(
+            type=self.type, method=self.method)
+
+    @property
+    def method(self):
+        return self._method
+
+    @method.setter
+    def method(self, m):
+        if not m in READ_METHODS:
+            raise Exception('method "{method}" must be one of {allowed}'.format(
+                method=m, allowed=READ_METHODS))
+        self._method = m
 
     def read(self):
         """
@@ -85,7 +99,8 @@ class Read(object):
             for item in self.filters:
                 if item['filter']:
                     filter_list.append(item['filter'])
-                elif item['datatype']:
+
+                elif item['datatype']:  # pragma: no cover -> need to figure this out
                     elem.append(item['datatype'])
 
                 if item['fieldname']:
@@ -116,20 +131,9 @@ class Read(object):
 
         return elem
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
+    def _main(self):
+        return self.read()
 
-        """
-        return ET.tostring(self.read(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
 
     class Filter(object):
         """
@@ -147,7 +151,8 @@ class Read(object):
             self.datatype = datatype.getDatatype()
 
         def __str__(self):
-            return "filter object"
+            return "<Filter type={type} field={field}>".format(
+                type=self.filter, field=self.fieldname)
 
         def getFilter(self):
             """
@@ -161,7 +166,7 @@ class Read(object):
             return f
 
 
-class Report(object):
+class Report(_Base):
     """
     Use the Report command to run a report and email a PDF copy
     of a Timesheet, Envelope, or Saved report.
@@ -169,22 +174,26 @@ class Report(object):
     Arguments:
         type (str): a valid XML type. Only Timesheet, Envelope
                         or Reportf datatypes are allowed
-        report (obj): a valid XML report element datatype
+        datatype (obj): a valid XML report element datatype
 
     """
-    def __init__(self, type, report):
+    def __init__(self, type, datatype):
+        _Base.__init__(self)
         self.type = type
-        self.report = report.getDatatype()
+        self.datatype = datatype.getDatatype()
 
-    # type
+    def __str__(self):
+        return "<Report type={type}>".format(type=self.type)
+
     @property
     def type(self):
         return self._type
 
     @type.setter
     def type(self, t):
-        if not t in ['Timesheet', 'Envelope', 'Reportf']:
-            raise Exception('type "%s" not supported' % t)
+        if not t in REPORT_TYPES:
+            raise Exception('type "{type}" must be one of {allowed}'.format(
+                type=t, allowed=REPORT_TYPES))
         self._type = t
 
     def getReport(self):
@@ -196,26 +205,14 @@ class Report(object):
         attribs = {}
         attribs['type'] = self.type
         elem.attrib = attribs
-        elem.append(self.report)
+        elem.append(self.datatype)
         return elem
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.getReport(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.getReport()
 
 
-class Add(object):
+class Add(_Base):
     """
     Use the Add command to add records.
 
@@ -226,12 +223,13 @@ class Add(object):
 
     """
     def __init__(self, type, attribs, datatype):
+        _Base.__init__(self)
         self.type = type
         self.attribs = attribs
         self.datatype = datatype.getDatatype()
 
     def __str__(self):
-        return 'Add "%s"' % self.type
+        return '<Add type={type}>'.format(type=self.type)
 
     # type
     @property
@@ -241,13 +239,11 @@ class Add(object):
     @type.setter
     def type(self, t):
         if t == 'User':
-            raise Exception(
-                'datatype "%s" not supported - use CreateUser' % t
-            )
+            raise Exception('datatype "{type}" not supported - use CreateUser'.format(
+                type=t))
         if t == 'Company':
-            raise Exception(
-                'datatype "%s" not supported - use CreateAccount' % t
-            )
+            raise Exception('datatype "{type}" not supported - use CreateAccount'.format(
+                type=t))
         self._type = t
 
     def add(self):
@@ -267,23 +263,11 @@ class Add(object):
         elem.append(self.datatype)
         return elem
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.add(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.add()
 
 
-class Delete(object):
+class Delete(_Base):
     """
     Use the Delete command to delete records.
 
@@ -293,11 +277,12 @@ class Delete(object):
 
     """
     def __init__(self, type, datatype):
+        _Base.__init__(self)
         self.type = type
         self.datatype = datatype.getDatatype()
 
     def __str__(self):
-        return 'Delete "%s"' % self.type
+        return '<Delete type={type}>'.format(type=self.type)
 
     def delete(self):
         """
@@ -311,23 +296,11 @@ class Delete(object):
         elem.append(self.datatype)
         return elem
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.delete(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.delete()
 
 
-class Modify(object):
+class Modify(_Base):
     """
     Use the Modify command to change records.
 
@@ -338,12 +311,13 @@ class Modify(object):
 
     """
     def __init__(self, type, attribs, datatype):
+        _Base.__init__(self)
         self.type = type
         self.attribs = attribs
         self.datatype = datatype.getDatatype()
 
     def __str__(self):
-        return 'Modify "%s"' % self.type
+        return '<Modify type={type}>'.format(type=self.type)
 
     def modify(self):
         """
@@ -362,23 +336,11 @@ class Modify(object):
         elem.append(self.datatype)
         return elem
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.modify(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.modify()
 
 
-class ModifyOnCondition(object):
+class ModifyOnCondition(_Base):
     """
     Use the ModifyOnCondition command to perform actions such as
     updating the external_id of a record type only if the update
@@ -391,12 +353,13 @@ class ModifyOnCondition(object):
 
     """
     def __init__(self, type, datatype1, datatype2):
+        _Base.__init__(self)
         self.type = type
         self.datatype1 = datatype1.getDatatype()
         self.datatype2 = datatype2.getDatatype()
 
     def __str__(self):
-        return 'Modify "%s"' % self.type
+        return '<ModifyOnCondition type={type}>'.format(type=self.type)
 
     def modify(self):
         """
@@ -412,23 +375,11 @@ class ModifyOnCondition(object):
         elem.append(self.datatype2)
         return elem
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.modify(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.modify()
 
 
-class Submit(object):
+class Submit(_Base):
     """
     Use the Submit command to submit records.
 
@@ -439,12 +390,13 @@ class Submit(object):
 
     """
     def __init__(self, type, datatype, approval):
+        _Base.__init__(self)
         self.type = type
         self.datatype = datatype.getDatatype()
         self.approval = approval.getDatatype()
 
     def __str__(self):
-        return 'Submit "%s"' % self.type
+        return '<Submit type={type}>'.format(type=self.type)
 
     # type
     @property
@@ -453,8 +405,9 @@ class Submit(object):
 
     @type.setter
     def type(self, t):
-        if not t in ['Timesheet', 'Envelope']:
-            raise Exception('type "%s" not supported' % t)
+        if not t in SUBMIT_TYPES:
+            raise Exception('type "{type}" must be one of {allowed}'.format(
+                type=t, allowed=SUBMIT_TYPES))
         self._datatype = t
 
     def submit(self):
@@ -470,23 +423,11 @@ class Submit(object):
         elem.append(self.approval)
         return elem
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.submit(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.submit()
 
 
-class CreateAccount(object):
+class CreateAccount(_Base):
     """
     Use the CreateAccount command to create a new OpenAir account.
     When a new account is created, the first user is also created
@@ -498,11 +439,13 @@ class CreateAccount(object):
 
     """
     def __init__(self, company, user):
+        _Base.__init__(self)
         self.company = company
         self.user = user
 
     def __str__(self):
-        return 'CreateAccount for "%s"' % self.company.fields['nickname']
+        return '<CreateAccount nickname={nickname}>'.format(
+            nickname=self.company.fields['nickname'])
 
     # company
     @property
@@ -512,7 +455,7 @@ class CreateAccount(object):
     @company.setter
     def company(self, c):
         if not 'nickname' in c.fields:
-            raise Exception('"nickname" is a required Company field' % c)
+            raise Exception('"nickname" is a required Company field')
         self._company = c
 
     # user
@@ -527,9 +470,7 @@ class CreateAccount(object):
             not 'password' in u.fields or
             not 'email' in u.fields
         ):
-            raise Exception(
-                '"nickname, password and email" are required User fields' % u
-            )
+            raise Exception('"nickname, password and email" are required User fields')
         self._user = u
 
     def create(self):
@@ -542,23 +483,11 @@ class CreateAccount(object):
         elem.append(self.user.getDatatype())
         return elem
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.create(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.create()
 
 
-class CreateUser(object):
+class CreateUser(_Base):
     """
     Use the CreateUser command to create a new OpenAir user.
 
@@ -568,11 +497,13 @@ class CreateUser(object):
 
     """
     def __init__(self, company, user):
+        _Base.__init__(self)
         self.company = company
         self.user = user
 
     def __str__(self):
-        return 'CreateUser "%s"' % self.user.fields['nickname']
+        return '<CreateUser nickname={nickname}>'.format(
+            nickname=self.user.fields['nickname'])
 
     # company
     @property
@@ -582,7 +513,7 @@ class CreateUser(object):
     @company.setter
     def company(self, c):
         if not 'nickname' in c.fields:
-            raise Exception('"nickname" is a required Company field' % c)
+            raise Exception('"nickname" is a required Company field')
         self._company = c
 
     # user
@@ -593,13 +524,11 @@ class CreateUser(object):
     @user.setter
     def user(self, u):
         if (
-            not 'nickname' in u.fields or
-            not 'password' in u.fields or
-            not 'email' in u.fields
+                not 'nickname' in u.fields or
+                not 'password' in u.fields or
+                not 'email' in u.fields
         ):
-            raise Exception(
-                '"nickname, password and email" are required User fields' % u
-            )
+            raise Exception('"nickname, password and email" are required User fields')
         self._user = u
 
     def create(self):
@@ -612,23 +541,11 @@ class CreateUser(object):
         elem.append(self.user.getDatatype())
         return elem
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.create(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.create()
 
 
-class Switch(object):
+class Switch(_Base):
     """
     Use the Switch command to set Company and User records.
 
@@ -638,11 +555,24 @@ class Switch(object):
 
     """
     def __init__(self, type, datatype):
+        _Base.__init__(self)
         self.type = type
         self.datatype = datatype
 
     def __str__(self):
-        return '%s flag for "%s"' % (self.type, self.datatype['name'])
+        return '<Switch type={type}>'.format(
+            type=self.type)
+
+    @property
+    def type(self):
+        return self._type
+
+    @type.setter
+    def type(self, t):
+        if not t in SWITCH_TYPES:
+            raise Exception('type "{type}" must be one of {allowed}'.format(
+                type=t, allowed=SWITCH_TYPES))
+        self._type = t
 
     def switch(self):
         """
@@ -654,23 +584,11 @@ class Switch(object):
         flags.append(self.datatype.getDatatype())
         return elem
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.switch(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.switch()
 
 
-class MakeURL(object):
+class MakeURL(_Base):
     """
     Use the MakeURL command to obtain a URL for a specific application page.
 
@@ -682,13 +600,37 @@ class MakeURL(object):
 
     """
     def __init__(self, uid, page, app, arg):
+        _Base.__init__(self)
         self.uid = uid
         self.page = page
         self.app = app
         self.arg = arg
 
     def __str__(self):
-        return "%s (%s)" % (self.page, self.app)
+        return "<MakeURL page={page} app={app}>".format(
+            page=self.page, app=self.app)
+
+    @property
+    def page(self):
+        return self._page
+
+    @page.setter
+    def page(self, p):
+        if not p in PAGE_ATTRIBUTES:
+            raise Exception('page "{page}" must be one of {allowed}'.format(
+                page=p, allowed=PAGE_ATTRIBUTES))
+        self._page = p
+
+    @property
+    def app(self):
+        return self._app
+
+    @app.setter
+    def app(self, a):
+        if not a in APP_ATTRIBUTES:
+            raise Exception('app "{app}" must be one of {allowed}'.format(
+                app=a, allowed=APP_ATTRIBUTES))
+        self._app = a
 
     def makeurl(self):
         """
@@ -716,74 +658,5 @@ class MakeURL(object):
         makeurl.append(app)
         return makeurl
 
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        return ET.tostring(self.makeurl(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
-
-
-class Error(object):
-    """
-    Use the Error command to return info about an error code.
-    Fetching errors does not require authentication, so this is
-    a shortcut without having to create a Datatype and Read
-    command separately.
-
-    Arguments:
-        code (str): an error code string
-
-    """
-    def __init__(self, application, code):
-        self.application = application
-        self.code = code
-
-    def __str__(self):
-        return "Error code %s" % self.code
-
-    def error(self):
-        """
-        Returns an ElementTree object containing XML error tags.
-
-        """
-        request = ET.Element('request')
-        request.attrib = {
-            'API_ver': '1.0',
-            'client': self.application.client,
-            'client_ver': self.application.client_version,
-            'namespace': self.application.namespace,
-            'key': self.application.key
-        }
-
-        read = ET.SubElement(request, 'Read')
-        read.attrib = {'type': 'Error', 'method': 'equal to'}
-
-        error = ET.SubElement(read, 'Error')
-        code = ET.SubElement(error, 'code')
-        code.text = self.code
-        return request
-
-    def tostring(self):
-        """
-        Return a string containing XML tags.
-
-        """
-        header = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>'
-        return header + ET.tostring(self.error(), 'utf-8')
-
-    def prettify(self):
-        """
-        Return a formatted, prettified string containing XML tags.
-
-        """
-        reparsed = minidom.parseString(self.tostring())
-        return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+    def _main(self):
+        return self.makeurl()

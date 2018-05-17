@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.1.0] - 2018-05-16
+### Added
+- New _Base class
+- Unittests available in /tests
+- coverage.py for code coverage
+- Travis CI and Codecov services
+
+### Changed
+- Moved Error from commands to connections
+- Moved tostring and prettify to _Base class
+- Moved documentation to /docs
+
 ## [1.0.0] - 2018-05-11
 ### Added
 - Gitbook documentation pages
@@ -24,3 +36,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Removed unnecessary static variables from utilities.py
 
 [Unreleased]: https://github.com/23maverick23/oaxmlapi/compare/v1.0.0...HEAD
+[1.1.0]: https://github.com/23maverick23/oaxmlapi/compare/v1.1.0...v1.0.0

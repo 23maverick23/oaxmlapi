@@ -1,0 +1,13 @@
+[run]
+branch = True
+source=oaxmlapi
+
+[report]
+exclude_lines =
+    pragma: no cover
+    except
+    import
+    if __name__
+ignore_errors = True
+omit =
+    tests/*

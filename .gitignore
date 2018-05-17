@@ -178,5 +178,9 @@ bh_unicode_properties.cache
 # https://packagecontrol.io/packages/sublime-github
 GitHub.sublime-settings
 
+# Coverage testing toolset
+/htmlcov
+.coverage
+
 
 # End of https://www.gitignore.io/api/osx,python,gitbook,sublimetext

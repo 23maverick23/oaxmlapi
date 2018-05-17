@@ -1,13 +1,14 @@
 # oaxmlapi
 
-![OpenAir release](https://img.shields.io/badge/OpenAir%20Release-2018.1-green.svg) ![PyPI](https://img.shields.io/pypi/23maverick23/oaxmlapi.svg) ![GitHub tag](https://img.shields.io/github/tag/23maverick23/oaxmlapi.svg) ![license](https://img.shields.io/github/license/23maverick23/oaxmlapi.svg) ![GitHub top language](https://img.shields.io/github/languages/top/23maverick23/oaxmlapi.svg)
+![PyPI](https://img.shields.io/pypi/23maverick23/oaxmlapi.svg) ![Codecov](https://img.shields.io/codecov/c/github/23maverick23/oaxmlapi.svg) ![Travis](https://img.shields.io/travis/23maverick23/oaxmlapi.svg) ![license](https://img.shields.io/github/license/23maverick23/oaxmlapi.svg) ![GitHub top language](https://img.shields.io/github/languages/top/23maverick23/oaxmlapi.svg) ![OpenAir release](https://img.shields.io/badge/OpenAir%20Release-2018.1-green.svg)
 
 ## DESCRIPTION
 oaxmlapi is a Python wrapper around the NetSuite OpenAir XML API. It allows for easier interaction with the XML version of the OpenAir API and reduces the need to generate raw XML. The library is written entirely in Python and utilizes the etree.ElementTree library for producing pre-formatted XML tags and attributes for use in your API requests.
 
 ## REQUIREMENTS
-Python 2.5+, 3.6+
-simplejson
+* Python 2.6, 2.7, 3.5, 3.6
+* coverage [view source](https://bitbucket.org/ned/coveragepy)
+* codecov [view source](https://github.com/codecov/codecov-python)
 
 ## INSTALLATION
 
