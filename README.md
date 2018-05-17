@@ -6,7 +6,7 @@
 oaxmlapi is a Python wrapper around the NetSuite OpenAir XML API. It allows for easier interaction with the XML version of the OpenAir API and reduces the need to generate raw XML. The library is written entirely in Python and utilizes the etree.ElementTree library for producing pre-formatted XML tags and attributes for use in your API requests.
 
 ## REQUIREMENTS
-* Python 2.6, 2.7, 3.5, 3.6
+* Python 2.7, 3.5, 3.6
 * coverage [view source](https://bitbucket.org/ned/coveragepy)
 * codecov [view source](https://github.com/codecov/codecov-python)
 
